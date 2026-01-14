@@ -15,6 +15,8 @@ jobs:
       #####################################################
       # 1) Terraform fmt
       #####################################################
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
       - name: Terraform fmt check
         run: terraform fmt -check -recursive
 
