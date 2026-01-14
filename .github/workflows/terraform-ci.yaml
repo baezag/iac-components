@@ -37,6 +37,8 @@ jobs:
       #####################################################
       - name: Quick static checks
         run: |
+          pwd
+          ls -lR
           bash iac-components/scripts/tf-quick-checks.sh
 
       #####################################################
