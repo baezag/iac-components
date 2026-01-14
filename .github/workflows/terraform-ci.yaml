@@ -1,0 +1,80 @@
+name: Terraform CI Controls
+
+on:
+  workflow_call:
+
+jobs:
+  terraform-ci:
+    runs-on: ubuntu-latest
+    #runs-on: self-hosted
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      #####################################################
+      # 1) Terraform fmt
+      #####################################################
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive
+
+      #####################################################
+      # 2) Terraform validate
+      #####################################################
+      - name: Terraform validate
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Checkout components
+        uses: actions/checkout@v4
+        with:
+          repository: baezag/iac-components
+          path: iac-components
+
+      #####################################################
+      # 3) Quick checks
+      #####################################################
+      - name: Quick static checks
+        run: |
+          bash iac-components/scripts/tf-quick-checks.sh
+
+      #####################################################
+      # 4) TFLint
+      #####################################################
+      - name: Initialize TFLint plugins
+        run: |
+          cp iac-components/tools/config/tflint/.tflint.hcl .
+          tflint --init
+
+      - name: Run TFLint with AWS rules
+        run: |
+          tflint --enable-plugin aws --recursive --minimum-failure-severity error
+
+      #####################################################
+      # 5) Trivy filesystem scan (secrets, misconfigs)
+      #####################################################
+      - name: Trivy FS Scan (secrets & vuln)
+        run: |
+          ./trivy fs -s HIGH,CRITICAL --exit-code 1 .
+
+      #####################################################
+      # 6) Trivy config scan (IaC misconfig)
+      #####################################################
+      - name: Trivy Config Scan
+        run: |
+          ./trivy config --config-check iac-components/policies/trivy --check-namespaces trivy --misconfig-scanners terraform -s HIGH,CRITICAL --exit-code 1
+
+      #####################################################
+      # 7) terraform-config-inspect
+      #####################################################
+      - name: Generate Terraform inspect JSON
+        run: |
+          terraform-config-inspect --json . > tfinspect.json
+
+      #####################################################
+      # 9) OPA / conftest with inspect.json
+      #####################################################
+      - name: Execute conftest on terraform inspect
+        run: |
+          conftest test tfinspect.json --policy iac-components/policies/opa --all-namespaces
