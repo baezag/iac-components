@@ -43,13 +43,10 @@ jobs:
       #####################################################
       # 4) TFLint
       #####################################################
-      - name: Initialize TFLint plugins
+      - name: Initialize & Run TFLint
         run: |
           cp iac-components/tools/config/tflint/.tflint.hcl .
           tflint --init
-
-      - name: Run TFLint with AWS rules
-        run: |
           tflint --recursive --minimum-failure-severity error
 
       #####################################################
