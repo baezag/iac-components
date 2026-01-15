@@ -64,7 +64,7 @@ jobs:
       #####################################################
       - name: Trivy Config Scan
         run: |
-          trivy config --cache-dir /tmp -q --config-check iac-components/policies/trivy --check-namespaces trivy --misconfig-scanners terraform -s HIGH,CRITICAL --exit-code 1
+          trivy config --cache-dir /tmp -q --config-check iac-components/policies/trivy --check-namespaces trivy --misconfig-scanners terraform -s HIGH,CRITICAL --exit-code 1 .
 
       #####################################################
       # 7) terraform-config-inspect
