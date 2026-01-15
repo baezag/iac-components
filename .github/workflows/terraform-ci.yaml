@@ -31,6 +31,7 @@ jobs:
         with:
           repository: baezag/iac-components
           path: iac-components
+          ref: dev
 
       #####################################################
       # 3) Quick checks
