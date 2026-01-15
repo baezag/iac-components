@@ -50,21 +50,21 @@ jobs:
 
       - name: Run TFLint with AWS rules
         run: |
-          tflint --enable-plugin aws --recursive --minimum-failure-severity error
+          tflint --recursive --minimum-failure-severity error
 
       #####################################################
       # 5) Trivy filesystem scan (secrets, misconfigs)
       #####################################################
       - name: Trivy FS Scan (secrets & vuln)
         run: |
-          trivy fs -s HIGH,CRITICAL --exit-code 1 .
+          trivy fs --cache-dir /tmp -q -s HIGH,CRITICAL --exit-code 1 .
 
       #####################################################
       # 6) Trivy config scan (IaC misconfig)
       #####################################################
       - name: Trivy Config Scan
         run: |
-          trivy config --config-check iac-components/policies/trivy --check-namespaces trivy --misconfig-scanners terraform -s HIGH,CRITICAL --exit-code 1
+          trivy config --cache-dir /tmp -q --config-check iac-components/policies/trivy --check-namespaces trivy --misconfig-scanners terraform -s HIGH,CRITICAL --exit-code 1
 
       #####################################################
       # 7) terraform-config-inspect
