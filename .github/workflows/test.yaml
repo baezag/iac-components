@@ -1,0 +1,21 @@
+name: Test Child
+on: 
+  workflow_call:
+    inputs:
+        environment:
+          required: true
+          type: string
+        workspace:
+          required: true
+          type: string
+jobs:
+  Job1:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Step 1
+        run: |
+          echo "${{ secrets.TEST_SECRET }}"
+      - name: Step 2
+        run: |
+          echo "${{ inputs.workspace }}"
