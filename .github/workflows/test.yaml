@@ -22,3 +22,6 @@ jobs:
       - name: Step 3
         run: |
           echo "${{ vars.WORKSPACE }}"
+      - name: Step 4
+        run: |
+          echo "${GITHUB_REPOSITORY#*/}"
