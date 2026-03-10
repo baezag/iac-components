@@ -25,3 +25,24 @@ jobs:
       - name: Step 4
         run: |
           echo "${GITHUB_REPOSITORY#*/}"
+      - name: Step 5
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            ENVIRONMENT="prd"
+          else
+            ENVIRONMENT="dev"
+          fi
+
+          WORKSPACE="${ENVIRONMENT}_${REPO_NAME}"
+
+          echo "::add-mask::${{ vars.TOKEN }}"
+          echo "::add-mask::${WORKSPACE}"
+          echo "T1_TOKEN=${{ vars.TOKEN }}" >> $GITHUB_ENV
+          echo "T1_TEST=MYTEST" >> $GITHUB_ENV
+          echo "T1_WORKSPACE=${WORKSPACE}" >> $GITHUB_ENV
+
+      - name: Step 6
+        run: |
+          env
