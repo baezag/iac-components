@@ -19,3 +19,6 @@ jobs:
       - name: Step 2
         run: |
           echo "${{ inputs.workspace }}"
+      - name: Step 3
+        run: |
+          echo "${{ vars.WORKSPACE }}"
